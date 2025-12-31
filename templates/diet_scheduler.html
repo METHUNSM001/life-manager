@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍽 AI Diet Scheduler - Methun Life Manager</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<script src="{{ url_for('static', filename='voice.js') }}"></script>
+<style>
+    /* Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #2E8B57 0%, #3CB371 30%, #90EE90 70%, #F0FFF0 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+        overflow-x: hidden;
+        animation: gradientBackground 15s ease infinite;
+        background-size: 400% 400%;
+    }
+    
+    @keyframes gradientBackground {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    /* Animated Background Elements */
+    .bg-fruit {
+        position: absolute;
+        font-size: 2.5rem;
+        opacity: 0.15;
+        z-index: -1;
+        animation: floatFruit 20s linear infinite;
+    }
+    
+    @keyframes floatFruit {
+        0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.3; }
+        90% { opacity: 0.3; }
+        100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    
+    /* Header */
+    .header-container {
+        text-align: center;
+        margin-bottom: 30px;
+        width: 100%;
+        max-width: 800px;
+        animation: fadeInDown 1s ease;
+    }
+    
+    .header-container h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: white;
+        text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .header-container p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.2rem;
+        font-weight: 300;
+    }
+    
+    /* Main Container */
+    .main-container {
+        width: 100%;
+        max-width: 900px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        animation: fadeInUp 1s ease 0.3s both;
+    }
+    
+    /* Form Card */
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, #FF7F50, #FFA07A, #20B2AA, #3CB371);
+        background-size: 300% 100%;
+        animation: gradientShift 5s linear infinite;
+    }
+    
+    .form-card h2 {
+        color: #2E8B57;
+        text-align: center;
+        margin-bottom: 35px;
+        font-size: 2.2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    /* Form Elements */
+    form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 25px;
+    }
+    
+    .input-group {
+        position: relative;
+    }
+    
+    .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #2E8B57;
+        font-weight: 600;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .input-group label i {
+        color: #FF7F50;
+    }
+    
+    .input-group input, .input-group select {
+        width: 100%;
+        padding: 18px 20px 18px 50px;
+        border: 2px solid #E0F7E9;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        transition: all 0.4s ease;
+        background-color: #F8FFF9;
+        color: #2E8B57;
+        box-shadow: 0 5px 15px rgba(46, 139, 87, 0.05);
+    }
+    
+    .input-group input:focus, .input-group select:focus {
+        outline: none;
+        border-color: #3CB371;
+        background-color: white;
+        box-shadow: 0 8px 25px rgba(60, 179, 113, 0.2);
+        transform: translateY(-3px);
+    }
+    
+    .input-group i.input-icon {
+        position: absolute;
+        left: 20px;
+        top: 45px;
+        color: #3CB371;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .input-group input:focus + i.input-icon {
+        color: #FF7F50;
+        transform: scale(1.2);
+    }
+    
+    /* Language Selector */
+    .language-selector {
+        grid-column: 1 / -1;
+        margin-top: 10px;
+    }
+    
+    .language-selector select {
+        background-color: #2E8B57;
+        color: rgb(0, 0, 0);
+        border: none;
+        padding: 15px 20px;
+        border-radius: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .language-selector select:hover {
+        background-color: #3CB371;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(46, 139, 87, 0.3);
+    }
+    
+    /* Generate Button */
+    .generate-btn {
+        grid-column: 1 / -1;
+        background: linear-gradient(to right, #FF7F50, #FFA07A);
+        color: white;
+        border: none;
+        padding: 22px;
+        border-radius: 15px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        box-shadow: 0 10px 25px rgba(255, 127, 80, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .generate-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.7s;
+    }
+    
+    .generate-btn:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(255, 127, 80, 0.4);
+        background: linear-gradient(to right, #FFA07A, #FF7F50);
+    }
+    
+    .generate-btn:hover::before {
+        left: 100%;
+    }
+    
+    .generate-btn:active {
+        transform: translateY(-2px) scale(1);
+    }
+    
+    /* Result Card */
+    .result-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.8s ease;
+    }
+    
+    .result-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, #20B2AA, #3CB371, #FF7F50);
+        background-size: 300% 100%;
+        animation: gradientShift 5s linear infinite;
+    }
+    
+    .result-card h3 {
+        color: #2E8B57;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    /* Diet Plan Display */
+    .diet-text {
+        background: #F8FFF9;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border-left: 6px solid #3CB371;
+        box-shadow: 0 10px 25px rgba(46, 139, 87, 0.1);
+        line-height: 1.8;
+        color: #2E8B57;
+        font-size: 1.1rem;
+        max-height: 500px;
+        overflow-y: auto;
+        animation: fadeIn 1s ease;
+    }
+    
+    .diet-text::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .diet-text::-webkit-scrollbar-track {
+        background: #E0F7E9;
+        border-radius: 10px;
+    }
+    
+    .diet-text::-webkit-scrollbar-thumb {
+        background: #3CB371;
+        border-radius: 10px;
+    }
+    
+    /* Audio Controls */
+    .audio-section {
+        background: #F0FFF0;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 20px;
+        border: 2px dashed #3CB371;
+        text-align: center;
+    }
+    
+    .audio-section h4 {
+        color: #2E8B57;
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .audio-controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .audio-btn {
+        background: linear-gradient(to right, #3CB371, #20B2AA);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(60, 179, 113, 0.3);
+    }
+    
+    .audio-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(60, 179, 113, 0.4);
+    }
+    
+    .audio-btn:active {
+        transform: translateY(-1px);
+    }
+    
+    #playBtn { background: linear-gradient(to right, #3CB371, #2E8B57); }
+    #pauseBtn { background: linear-gradient(to right, #FFA07A, #FF7F50); }
+    #stopBtn { background: linear-gradient(to right, #FF7F50, #FF6347); }
+    
+    audio {
+        width: 100%;
+        margin-top: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* BMI Calculator */
+    .bmi-calculator {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 25px;
+        margin-top: 20px;
+        border: 2px solid #FFA07A;
+        animation: fadeIn 1s ease;
+    }
+    
+    .bmi-result {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2E8B57;
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 10px;
+        background: #F0FFF0;
+        animation: pulse 2s infinite;
+    }
+    
+    /* Animation Keyframes */
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 300% 50%; }
+    }
+    
+    @keyframes fadeInDown {
+        0% { opacity: 0; transform: translateY(-30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInUp {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInUp {
+        0% { opacity: 0; transform: translateY(50px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(60, 179, 113, 0.4); }
+        50% { box-shadow: 0 0 0 10px rgba(60, 179, 113, 0); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .header-container h1 {
+            font-size: 2.2rem;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .form-card, .result-card {
+            padding: 30px 20px;
+            border-radius: 20px;
+        }
+        
+        form {
+            grid-template-columns: 1fr;
+        }
+        
+        .input-group input, .input-group select {
+            padding: 16px 16px 16px 45px;
+        }
+        
+        .audio-controls {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .audio-btn {
+            width: 100%;
+            max-width: 250px;
+            justify-content: center;
+        }
+    }
+</style>
+</head>
+<body>
+    <!-- Animated Background Fruits -->
+    <script>
+        // Create animated background fruits
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.querySelector('body');
+            const fruits = ['🍎', '🍌', '🍇', '🍓', '🍊', '🥑', '🥦', '🥬', '🍍', '🥝', '🍒', '🍑'];
+            
+            for (let i = 0; i < 15; i++) {
+                const fruit = document.createElement('div');
+                fruit.classList.add('bg-fruit');
+                
+                // Random properties
+                const randomFruit = fruits[Math.floor(Math.random() * fruits.length)];
+                const left = Math.random() * 100;
+                const delay = Math.random() * 15;
+                const duration = Math.random() * 25 + 20;
+                const fontSize = Math.random() * 2 + 2;
+                
+                fruit.textContent = randomFruit;
+                fruit.style.left = `${left}%`;
+                fruit.style.animationDelay = `${delay}s`;
+                fruit.style.animationDuration = `${duration}s`;
+                fruit.style.fontSize = `${fontSize}rem`;
+                
+                body.appendChild(fruit);
+            }
+        });
+    </script>
+    
+    <!-- Header -->
+    <div class="header-container">
+        <h1>
+            <i class="fas fa-apple-alt" style="color: #FF7F50;"></i>
+            AI Diet Scheduler
+            <i class="fas fa-heartbeat" style="color: #3CB371;"></i>
+        </h1>
+        <p>Get personalized diet plans based on your body metrics and health goals</p>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Input Form -->
+        <div class="form-card">
+            <h2><i class="fas fa-calculator"></i> Your Health Profile</h2>
+            <form method="POST">
+                <div class="input-group">
+                    <label><i class="fas fa-ruler-vertical"></i> Height (cm)</label>
+                    <input type="number" name="height" placeholder="e.g. 175" min="100" max="250" required>
+                    <i class="fas fa-ruler input-icon"></i>
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-weight"></i> Weight (kg)</label>
+                    <input type="number" name="weight" placeholder="e.g. 70" min="30" max="200" required>
+                    <i class="fas fa-weight-hanging input-icon"></i>
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-bullseye"></i> Fitness Goal</label>
+                    <select name="goal" required>
+                        <option value="" disabled selected>Select your goal</option>
+                        <option value="lose">Lose Weight</option>
+                        <option value="gain">Gain Weight</option>
+                        <option value="maintain">Maintain Weight</option>
+                        <option value="muscle">Build Muscle</option>
+                        <option value="toning">Body Toning</option>
+                    </select>
+                    <i class="fas fa-flag-checkered input-icon"></i>
+                </div>
+                
+                <div class="input-group language-selector">
+                    <label><i class="fas fa-language"></i> Preferred Language</label>
+                    <select name="language" id="languageSelect">
+                        <option value="en-US">English 🇺🇸</option>
+                        <option value="ta-IN">Tamil 🇮🇳</option>
+                        <option value="hi-IN">Hindi 🇮🇳</option>
+                        <option value="ml-IN">Malayalam 🇮🇳</option>
+                        <option value="te-IN">Telugu 🇮🇳</option>
+                        <option value="kn-IN">Kannada 🇮🇳</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="generate-btn">
+                    <i class="fas fa-magic"></i> Generate Personalized Diet Plan
+                </button>
+            </form>
+            
+            <!-- BMI Calculator (Inline) -->
+            <div class="bmi-calculator">
+                <h4><i class="fas fa-heart"></i> Quick BMI Calculator</h4>
+                <p>Enter your height and weight above to calculate BMI</p>
+                <div id="bmiResult" class="bmi-result">Enter values to calculate BMI</div>
+            </div>
+        </div>
+        
+        {% if diet_plan %}
+        <!-- Results Section -->
+        <div class="result-card">
+            <h3><i class="fas fa-clipboard-list"></i> Your Personalized Diet Plan</h3>
+            
+            <div class="diet-text" id="dietText">{{ diet_plan }}</div>
+            
+            <!-- Audio Controls -->
+            <div class="audio-section">
+                <h4><i class="fas fa-volume-up"></i> Listen to Your Diet Plan</h4>
+                
+                {% if tts_file %}
+                <audio controls autoplay>
+                    <source src="{{ tts_file }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <p style="color: #2E8B57; margin-top: 15px; font-style: italic;">
+                    <i class="fas fa-info-circle"></i> Audio generated in your selected language
+                </p>
+                {% else %}
+                <div class="audio-controls">
+                    <button id="playBtn" class="audio-btn">
+                        <i class="fas fa-play"></i> Play
+                    </button>
+                    <button id="pauseBtn" class="audio-btn">
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button id="stopBtn" class="audio-btn">
+                        <i class="fas fa-stop"></i> Stop
+                    </button>
+                    <button id="downloadBtn" class="audio-btn" onclick="downloadDietPlan()">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+                <div style="margin-top: 20px; color: #666; font-size: 0.9rem;">
+                    <i class="fas fa-headphones"></i> Select different language for voice synthesis
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Diet Tips -->
+            <div style="margin-top: 30px; padding: 20px; background: #FFF8F0; border-radius: 15px; border-left: 5px solid #FFA07A;">
+                <h4 style="color: #FF7F50; margin-bottom: 15px;">
+                    <i class="fas fa-lightbulb"></i> Healthy Tips
+                </h4>
+                <ul style="color: #2E8B57; line-height: 1.8; padding-left: 20px;">
+                    <li>Drink at least 8 glasses of water daily</li>
+                    <li>Include protein in every meal</li>
+                    <li>Eat smaller portions more frequently</li>
+                    <li>Combine cardio with strength training</li>
+                    <li>Get 7-8 hours of sleep each night</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if diet_plan and not tts_file %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initVoiceControls('dietText', 'playBtn', 'pauseBtn', 'stopBtn', 'languageSelect');
+        });
+    </script>
+    {% endif %}
+
+    <script>
+        // BMI Calculator
+        document.addEventListener('DOMContentLoaded', function() {
+            const heightInput = document.querySelector('input[name="height"]');
+            const weightInput = document.querySelector('input[name="weight"]');
+            const bmiResult = document.getElementById('bmiResult');
+            
+            function calculateBMI() {
+                if (heightInput.value && weightInput.value) {
+                    const height = heightInput.value / 100; // Convert to meters
+                    const weight = weightInput.value;
+                    const bmi = (weight / (height * height)).toFixed(1);
+                    
+                    let category = '';
+                    let color = '';
+                    
+                    if (bmi < 18.5) {
+                        category = 'Underweight';
+                        color = '#FFA07A';
+                    } else if (bmi < 25) {
+                        category = 'Normal';
+                        color = '#3CB371';
+                    } else if (bmi < 30) {
+                        category = 'Overweight';
+                        color = '#FF7F50';
+                    } else {
+                        category = 'Obese';
+                        color = '#FF6347';
+                    }
+                    
+                    bmiResult.innerHTML = `
+                        <div style="font-size: 2rem;">${bmi}</div>
+                        <div style="color: ${color}; font-weight: 700;">${category}</div>
+                        <div style="font-size: 0.9rem; margin-top: 5px;">Body Mass Index</div>
+                    `;
+                }
+            }
+            
+            heightInput.addEventListener('input', calculateBMI);
+            weightInput.addEventListener('input', calculateBMI);
+            
+            // Animate form inputs on focus
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-5px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Form validation
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                const requiredInputs = this.querySelectorAll('[required]');
+                
+                requiredInputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.style.animation = 'shake 0.5s';
+                        input.style.borderColor = '#FF6347';
+                        
+                        setTimeout(() => {
+                            input.style.animation = '';
+                        }, 500);
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields');
+                } else {
+                    // Show loading animation on button
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Diet Plan...';
+                    submitBtn.disabled = true;
+                    
+                    // Re-enable after 5 seconds (in case of error)
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 5000);
+                }
+            });
+            
+            // Download diet plan function
+            window.downloadDietPlan = function() {
+                const dietText = document.getElementById('dietText').textContent;
+                const blob = new Blob([dietText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'My_Diet_Plan.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Show success message
+                const downloadBtn = document.getElementById('downloadBtn');
+                const originalText = downloadBtn.innerHTML;
+                downloadBtn.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
+                downloadBtn.style.background = 'linear-gradient(to right, #3CB371, #2E8B57)';
+                
+                setTimeout(() => {
+                    downloadBtn.innerHTML = originalText;
+                    downloadBtn.style.background = '';
+                }, 2000);
+            };
+            
+            // Add shake animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                    20%, 40%, 60%, 80% { transform: translateX(5px); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

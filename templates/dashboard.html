@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Methun Life Manager | Dashboard</title>
+
+<!-- Icons & Animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ✅ FIXED BODY LAYOUT WITH ANIMATED GRADIENT */
+body {
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #000000, #1a1a2e, #16213e, #0f3460, #ff7a18);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Animated Background Particles */
+.bg-particle {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: rgba(255, 152, 0, 0.6);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+    animation: floatParticle linear infinite;
+}
+
+@keyframes floatParticle {
+    0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% { transform: translateY(-100px) translateX(100px) scale(1); opacity: 0; }
+}
+
+/* MAIN CONTENT */
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+    position: relative;
+}
+
+.dashboard-container {
+    width: 100%;
+    max-width: 1000px;
+    background: rgba(0, 0, 0, 0.75);
+    border-radius: 30px;
+    padding: 50px;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: fadeInUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107);
+    animation: shimmer 3s infinite linear;
+    background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.welcome-text {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.welcome-text h2 {
+    font-size: 42px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #ff9800, #ffc107, #ffeb3b, #ff9800);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientText 3s infinite linear;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 30px rgba(255, 152, 0, 0.3);
+}
+
+@keyframes gradientText {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.welcome-text p {
+    color: #bbb;
+    font-size: 18px;
+    margin-top: 10px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    position: relative;
+    display: inline-block;
+}
+
+.welcome-text p::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ff9800, transparent);
+}
+
+/* User Stats with Enhanced Design */
+.user-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 50px 0;
+    gap: 25px;
+}
+
+.stat-item {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 25px;
+    border-radius: 20px;
+    flex: 1;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 152, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 152, 0, 0.1), transparent);
+    transition: left 0.7s;
+}
+
+.stat-item:hover::before {
+    left: 100%;
+}
+
+.stat-item:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255, 152, 0, 0.3);
+    box-shadow: 0 15px 35px rgba(255, 152, 0, 0.2);
+}
+
+.stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    color: #ff9800;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.stat-label {
+    color: #bbb;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+/* Enhanced Modules Grid */
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.module-card {
+    background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(10, 10, 20, 0.9));
+    border-radius: 25px;
+    padding: 35px 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 152, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 280px;
+}
+
+.module-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ff5722, #ff9800, #ffc107, #ff5722);
+    z-index: -1;
+    border-radius: 27px;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.module-card:hover::before {
+    opacity: 1;
+    animation: borderRotate 3s linear infinite;
+}
+
+@keyframes borderRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.module-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 
+        0 25px 50px rgba(255, 152, 0, 0.3),
+        0 0 50px rgba(255, 152, 0, 0.2);
+    border-color: transparent;
+}
+
+.module-icon {
+    font-size: 60px;
+    margin-bottom: 25px;
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.module-card:hover .module-icon {
+    transform: scale(1.2) rotate(10deg);
+    filter: drop-shadow(0 0 15px currentColor);
+}
+
+.diet-icon {
+    color: #4caf50;
+    text-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+}
+
+.crop-icon {
+    color: #8bc34a;
+    text-shadow: 0 0 20px rgba(139, 195, 74, 0.5);
+}
+
+.trip-icon {
+    color: #2196f3;
+    text-shadow: 0 0 20px rgba(33, 150, 243, 0.5);
+}
+
+.module-card h3 {
+    color: #fff;
+    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.module-card p {
+    color: #aaa;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    flex-grow: 1;
+}
+
+.module-btn {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    border-radius: 50px;
+    border: 2px solid rgba(255, 152, 0, 0.3);
+    color: #ff9800;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: rgba(255, 152, 0, 0.1);
+    letter-spacing: 0.5px;
+}
+
+.module-card:hover .module-btn {
+    background: rgba(255, 152, 0, 0.2);
+    border-color: #ff9800;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(255, 152, 0, 0.2);
+    color: #ffc107;
+}
+
+/* Enhanced Logout Container */
+.logout-container {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 35px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.logout-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ff9800, transparent);
+}
+
+.logout-btn {
+    background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107);
+    border: none;
+    padding: 18px 45px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    color: white;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255, 87, 34, 0.3);
+}
+
+.logout-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s;
+}
+
+.logout-btn:hover::before {
+    left: 100%;
+}
+
+.logout-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 
+        0 15px 35px rgba(255, 87, 34, 0.4),
+        0 0 30px rgba(255, 152, 0, 0.3);
+    background: linear-gradient(90deg, #ff9800, #ffc107, #ff5722);
+}
+
+.logout-btn:active {
+    transform: translateY(-2px) scale(1.02);
+}
+
+/* ✅ ENHANCED FOOTER */
+.company-footer {
+    width: 100%;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(255, 140, 0, 0.1));
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    backdrop-filter: blur(10px);
+}
+
+.company-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107);
+    animation: shimmer 3s infinite linear;
+    background-size: 200% 100%;
+}
+
+.company-footer h3 {
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: 3px;
+    color: white;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.company-footer h3 span {
+    color: #ffcc80;
+    text-shadow: 0 0 20px rgba(255, 204, 128, 0.5);
+    position: relative;
+}
+
+.company-footer h3 span::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #ffcc80, transparent);
+}
+
+.company-footer p {
+    margin: 8px 0;
+    font-size: 15px;
+    color: #ddd;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+.company-footer .tagline {
+    font-size: 14px;
+    opacity: 0.9;
+    color: #ffcc80;
+    font-style: italic;
+    margin-top: 15px;
+    position: relative;
+    display: inline-block;
+    padding: 0 20px;
+}
+
+.company-footer .tagline::before,
+.company-footer .tagline::after {
+    content: '✨';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.7;
+}
+
+.company-footer .tagline::before {
+    left: 0;
+}
+
+.company-footer .tagline::after {
+    right: 0;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(50px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .dashboard-container {
+        padding: 40px 30px;
+        max-width: 95%;
+    }
+    
+    .welcome-text h2 {
+        font-size: 36px;
+    }
+    
+    .modules-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .user-stats {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .stat-item {
+        min-height: 130px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 30px 20px;
+        border-radius: 25px;
+    }
+    
+    .welcome-text h2 {
+        font-size: 30px;
+    }
+    
+    .welcome-text p {
+        font-size: 16px;
+    }
+    
+    .module-card {
+        padding: 30px 25px;
+        min-height: 250px;
+    }
+    
+    .module-icon {
+        font-size: 50px;
+        margin-bottom: 20px;
+    }
+    
+    .logout-btn {
+        padding: 16px 35px;
+        font-size: 16px;
+    }
+    
+    .company-footer h3 {
+        font-size: 22px;
+        letter-spacing: 2px;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-text h2 {
+        font-size: 26px;
+    }
+    
+    .module-card h3 {
+        font-size: 20px;
+    }
+    
+    .module-card p {
+        font-size: 14px;
+    }
+    
+    .module-btn {
+        padding: 12px 25px;
+        font-size: 14px;
+    }
+    
+    .stat-value {
+        font-size: 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Animated Background Particles -->
+<script>
+    // Create animated background particles
+    document.addEventListener('DOMContentLoaded', function() {
+        const body = document.querySelector('body');
+        for (let i = 0; i < 25; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('bg-particle');
+            
+            // Random properties
+            const left = Math.random() * 100;
+            const delay = Math.random() * 15;
+            const duration = Math.random() * 10 + 10;
+            const size = Math.random() * 4 + 1;
+            
+            particle.style.left = `${left}%`;
+            particle.style.animationDelay = `${delay}s`;
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            body.appendChild(particle);
+        }
+    });
+</script>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+    <div class="dashboard-container">
+
+        <div class="welcome-text">
+            <h2 class="animate__animated animate__fadeIn">Welcome, {{ user }} 👋</h2>
+            <p class="animate__animated animate__fadeIn animate__delay-1s">Your Smart Life Management Dashboard</p>
+        </div>
+
+        <div class="user-stats">
+            <div class="stat-item animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="stat-value" id="dietCount">0</div>
+                <div class="stat-label">Diet Plans</div>
+            </div>
+            <div class="stat-item animate__animated animate__fadeInUp animate__delay-1.2s">
+                <div class="stat-value" id="cropCount">0</div>
+                <div class="stat-label">Crop Advices</div>
+            </div>
+            <div class="stat-item animate__animated animate__fadeInUp animate__delay-1.4s">
+                <div class="stat-value" id="tripCount">0</div>
+                <div class="stat-label">Trips Planned</div>
+            </div>
+        </div>
+
+        <div class="modules-grid">
+            <div class="module-card animate__animated animate__fadeInUp animate__delay-1.6s" data-url="{{ url_for('diet') }}">
+                <i class="fas fa-utensils module-icon diet-icon"></i>
+                <h3>Diet Scheduler</h3>
+                <p>AI-powered personalized diet planning with nutrition tracking.</p>
+                <div class="module-btn">
+                    <i class="fas fa-external-link-alt"></i> Open
+                </div>
+            </div>
+
+            <div class="module-card animate__animated animate__fadeInUp animate__delay-1.8s" data-url="{{ url_for('crop_advisor') }}">
+                <i class="fas fa-seedling module-icon crop-icon"></i>
+                <h3>Crop Advisor</h3>
+                <p>Smart farming and crop guidance based on soil & climate.</p>
+                <div class="module-btn">
+                    <i class="fas fa-external-link-alt"></i> Open
+                </div>
+            </div>
+
+            <div class="module-card animate__animated animate__fadeInUp animate__delay-2s" data-url="{{ url_for('trip') }}">
+                <i class="fas fa-plane-departure module-icon trip-icon"></i>
+                <h3>Trip Planner</h3>
+                <p>Plan trips with budget management & smart itineraries.</p>
+                <div class="module-btn">
+                    <i class="fas fa-external-link-alt"></i> Open
+                </div>
+            </div>
+        </div>
+
+        <div class="logout-container animate__animated animate__fadeIn animate__delay-2.2s">
+            <form action="{{ url_for('logout') }}" method="GET">
+                <button class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </div>
+
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="company-footer">
+    <h3>METHUN<span>.ORG</span></h3>
+    <p>© 2025 Methun Life Manager. All Rights Reserved.</p>
+    <p class="tagline">Empowering Life • Health • Travel • Farming 🌱</p>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Enhanced counter animation with easing
+    function animateCounter(id, target, duration = 1500) {
+        const element = document.getElementById(id);
+        let start = 0;
+        const increment = target / (duration / 16);
+        
+        function updateCounter() {
+            start += increment;
+            if (start < target) {
+                element.innerText = Math.floor(start);
+                requestAnimationFrame(updateCounter);
+            } else {
+                element.innerText = target;
+            }
+        }
+        
+        updateCounter();
+    }
+    
+    animateCounter("dietCount", 12);
+    animateCounter("cropCount", 8);
+    animateCounter("tripCount", 5);
+    
+    // Enhanced module card click with ripple effect
+    document.querySelectorAll(".module-card").forEach(card => {
+        card.addEventListener("click", (e) => {
+            // Create ripple effect
+            const ripple = document.createElement("span");
+            const rect = card.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(0);
+                animation: ripple-animation 0.6s linear;
+                width: ${size}px;
+                height: ${size}px;
+                top: ${y}px;
+                left: ${x}px;
+                pointer-events: none;
+            `;
+            
+            card.appendChild(ripple);
+            
+            // Remove ripple after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+            
+            // Navigate after short delay
+            setTimeout(() => {
+                window.location.href = card.dataset.url;
+            }, 300);
+        });
+    });
+    
+    // Add ripple animation CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Add hover sound effect simulation (visual feedback)
+    const moduleCards = document.querySelectorAll('.module-card');
+    moduleCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        });
+    });
+    
+    // Logout button confirmation
+    const logoutForm = document.querySelector('form[action*="logout"]');
+    if (logoutForm) {
+        logoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                // Add exit animation
+                document.querySelector('.dashboard-container').style.animation = 'fadeInUp 0.5s ease reverse forwards';
+                setTimeout(() => {
+                    this.submit();
+                }, 500);
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>

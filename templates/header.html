@@ -1,0 +1,18 @@
+<header style="background:linear-gradient(90deg,#6a11cb,#2575fc);color:white;padding:12px 20px;position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+    <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        {% if session.get('user') %}
+            <a href="{{ url_for('dashboard') }}" style="color:white;text-decoration:none;font-weight:800;font-size:1.05rem;">METHUN.ORG</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" style="color:white;text-decoration:none;font-weight:800;font-size:1.05rem;">METHUN.ORG</a>
+        {% endif %}
+        <nav style="display:flex;gap:14px;align-items:center;">
+            {% if session.get('user') %}
+                <a href="{{ url_for('dashboard') }}" style="color:rgba(255,255,255,0.9);text-decoration:none;font-weight:600;">Dashboard</a>
+                <a href="{{ url_for('logout') }}" style="color:rgba(255,255,255,0.9);text-decoration:none;font-weight:600;">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" style="color:rgba(255,255,255,0.9);text-decoration:none;font-weight:600;">Login</a>
+                <a href="{{ url_for('register') }}" style="color:rgba(255,255,255,0.9);text-decoration:none;font-weight:600;">Register</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>

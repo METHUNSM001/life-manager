@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌱 Crop Advisor - Methun Life Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #228B22 0%, #32CD32 25%, #90EE90 50%, #98FB98 75%, #F0FFF0 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            animation: gradientShift 20s ease infinite;
+            background-size: 400% 400%;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Animated Background Elements */
+        .bg-leaf {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.2;
+            z-index: -1;
+            animation: floatLeaf 25s linear infinite;
+        }
+        
+        @keyframes floatLeaf {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
+        
+        /* Header */
+        .header-container {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 900px;
+            animation: slideDown 1s ease;
+        }
+        
+        .header-container h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #2F4F4F;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .header-container p {
+            color: #2F4F4F;
+            font-size: 1.2rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Main Container */
+        .main-container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        /* Form Card */
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 100, 0, 0.2);
+            border: 2px solid rgba(144, 238, 144, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #228B22, #32CD32, #90EE90, #98FB98);
+            background-size: 300% 100%;
+            animation: gradientFlow 6s linear infinite;
+        }
+        
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+        
+        .form-card h2 {
+            color: #228B22;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+        }
+        
+        .form-card h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(to right, #228B22, #32CD32);
+            border-radius: 2px;
+        }
+        
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2F4F4F;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-group label i {
+            color: #228B22;
+            width: 25px;
+            text-align: center;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            border: 2px solid #E8F5E8;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            transition: all 0.4s ease;
+            background-color: #F8FFF8;
+            color: #2F4F4F;
+            box-shadow: 0 5px 15px rgba(34, 139, 34, 0.05);
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #32CD32;
+            background-color: white;
+            box-shadow: 0 8px 25px rgba(50, 205, 50, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .input-group i.input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50px;
+            color: #32CD32;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus + i.input-icon,
+        .input-group select:focus + i.input-icon {
+            color: #228B22;
+            transform: scale(1.2);
+        }
+        
+        /* Required Indicator */
+        .required::after {
+            content: ' *';
+            color: #FF6347;
+            font-weight: bold;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            grid-column: 1 / -1;
+            margin-top: 10px;
+        }
+        
+        .language-selector select {
+            background: linear-gradient(to right, #228B22, #32CD32);
+            color: rgb(7, 2, 2);
+            border: none;
+            padding: 18px 25px;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 20px rgba(34, 139, 34, 0.2);
+        }
+        
+        .language-selector select:hover {
+            background: linear-gradient(to right, #32CD32, #228B22);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(34, 139, 34, 0.3);
+        }
+        
+        /* Submit Button */
+        .submit-btn {
+            grid-column: 1 / -1;
+            background: linear-gradient(to right, #228B22, #32CD32);
+            color: white;
+            border: none;
+            padding: 22px;
+            border-radius: 15px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(34, 139, 34, 0.3);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.8s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(34, 139, 34, 0.4);
+            background: linear-gradient(to right, #32CD32, #228B22);
+        }
+        
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-2px) scale(1);
+        }
+        
+        /* Result Card */
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 100, 0, 0.2);
+            border: 2px solid rgba(144, 238, 144, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.8s ease;
+        }
+        
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #90EE90, #98FB98, #228B22, #32CD32);
+            background-size: 300% 100%;
+            animation: gradientFlow 6s linear infinite;
+        }
+        
+        .result-card h3 {
+            color: #228B22;
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        /* Recommendation Display */
+        .recommendation-text {
+            background: #F8FFF8;
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border-left: 8px solid #32CD32;
+            box-shadow: 0 10px 30px rgba(34, 139, 34, 0.1);
+            line-height: 1.8;
+            color: #2F4F4F;
+            font-size: 1.2rem;
+            max-height: 600px;
+            overflow-y: auto;
+            animation: fadeIn 1s ease;
+            position: relative;
+        }
+        
+        .recommendation-text::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        .recommendation-text::-webkit-scrollbar-track {
+            background: #E8F5E8;
+            border-radius: 10px;
+        }
+        
+        .recommendation-text::-webkit-scrollbar-thumb {
+            background: #32CD32;
+            border-radius: 10px;
+        }
+        
+        .recommendation-text::-webkit-scrollbar-thumb:hover {
+            background: #228B22;
+        }
+        
+        /* Crop Stats */
+        .crop-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #90EE90, #98FB98);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            color: #2F4F4F;
+            box-shadow: 0 8px 20px rgba(144, 238, 144, 0.3);
+            transition: transform 0.3s ease;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #228B22;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        /* Audio Controls */
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px dashed #E8F5E8;
+        }
+        
+        .audio-btn {
+            background: linear-gradient(to right, #32CD32, #228B22);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(50, 205, 50, 0.3);
+        }
+        
+        .audio-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(50, 205, 50, 0.4);
+        }
+        
+        .audio-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        #playCropBtn {
+            background: linear-gradient(to right, #32CD32, #228B22);
+        }
+        
+        #pauseCropBtn {
+            background: linear-gradient(to right, #FFA500, #FF8C00);
+        }
+        
+        #stopCropBtn {
+            background: linear-gradient(to right, #FF6347, #DC143C);
+        }
+        
+        #downloadCropBtn {
+            background: linear-gradient(to right, #4169E1, #1E90FF);
+        }
+        
+        /* Weather Info */
+        .weather-info {
+            background: linear-gradient(135deg, #E8F5E8, #F0FFF0);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 2px solid #32CD32;
+            animation: fadeIn 1s ease;
+        }
+        
+        .weather-info h4 {
+            color: #228B22;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .weather-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .weather-item i {
+            font-size: 2rem;
+            color: #32CD32;
+            margin-bottom: 10px;
+        }
+        
+        /* Animation Keyframes */
+        @keyframes slideDown {
+            0% { opacity: 0; transform: translateY(-50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInUp {
+            0% { opacity: 0; transform: translateY(50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        /* Soil Type Visual */
+        .soil-visual {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .soil-type {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .soil-loamy {
+            background: #DEB887;
+            color: #8B4513;
+        }
+        
+        .soil-clay {
+            background: #D2691E;
+            color: white;
+        }
+        
+        .soil-sandy {
+            background: #F4A460;
+            color: #8B4513;
+        }
+        
+        .soil-type:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container h1 {
+                font-size: 2.2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .form-card, .result-card {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group input, .input-group select {
+                padding: 16px 16px 16px 50px;
+            }
+            
+            .audio-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .audio-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .crop-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Leaves -->
+    <script>
+        // Create animated background leaves
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.querySelector('body');
+            const leaves = ['🌱', '🌿', '🍃', '☘️', '🌾', '🌵', '🌴', '🌳', '🌲', '🎍'];
+            
+            for (let i = 0; i < 20; i++) {
+                const leaf = document.createElement('div');
+                leaf.classList.add('bg-leaf');
+                
+                // Random properties
+                const randomLeaf = leaves[Math.floor(Math.random() * leaves.length)];
+                const left = Math.random() * 100;
+                const delay = Math.random() * 20;
+                const duration = Math.random() * 30 + 25;
+                const fontSize = Math.floor(Math.random() * 3) + 1.5;
+                
+                leaf.textContent = randomLeaf;
+                leaf.style.left = `${left}%`;
+                leaf.style.animationDelay = `${delay}s`;
+                leaf.style.animationDuration = `${duration}s`;
+                leaf.style.fontSize = `${fontSize}rem`;
+                
+                body.appendChild(leaf);
+            }
+        });
+    </script>
+    
+    <!-- Header -->
+    <div class="header-container">
+        <h1>
+            <i class="fas fa-seedling" style="color: #228B22;"></i>
+            AI Crop Advisor
+            <i class="fas fa-tractor" style="color: #32CD32;"></i>
+        </h1>
+        <p>Get intelligent crop recommendations based on soil, climate, and farming conditions</p>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Input Form -->
+        <div class="form-card">
+            <h2><i class="fas fa-clipboard-list"></i> Farm Information</h2>
+            
+            <!-- Quick Soil Selector -->
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="color: #2F4F4F; margin-bottom: 15px; font-weight: 600;">
+                    <i class="fas fa-hand-pointer"></i> Quick Select Soil Type:
+                </p>
+                <div class="soil-visual">
+                    <div class="soil-type soil-loamy" onclick="selectSoil('Loamy')">Loamy Soil</div>
+                    <div class="soil-type soil-clay" onclick="selectSoil('Clay')">Clay Soil</div>
+                    <div class="soil-type soil-sandy" onclick="selectSoil('Sandy')">Sandy Soil</div>
+                </div>
+            </div>
+            
+            <form method="POST">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label class="required"><i class="fas fa-mountain"></i> Soil Type</label>
+                        <input type="text" name="soil_type" id="soil_type" placeholder="e.g. Loamy, Clay, Sandy" required>
+                        <i class="fas fa-mountain input-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="required"><i class="fas fa-tint"></i> Water Availability</label>
+                        <select name="water_level" required>
+                            <option value="" disabled selected>Select water level</option>
+                            <option value="High">High 💧💧💧</option>
+                            <option value="Medium">Medium 💧💧</option>
+                            <option value="Low">Low 💧</option>
+                        </select>
+                        <i class="fas fa-tint input-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="required"><i class="fas fa-map-marker-alt"></i> Location</label>
+                        <input type="text" name="location" placeholder="e.g. Tamil Nadu, Punjab" required>
+                        <i class="fas fa-map-marker-alt input-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="required"><i class="fas fa-sun"></i> Season</label>
+                        <select name="season" required>
+                            <option value="" disabled selected>Select season</option>
+                            <option value="Summer">Summer ☀️</option>
+                            <option value="Winter">Winter ❄️</option>
+                            <option value="Rainy">Rainy 🌧️</option>
+                            <option value="Spring">Spring 🌸</option>
+                            <option value="Autumn">Autumn 🍂</option>
+                        </select>
+                        <i class="fas fa-sun input-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-history"></i> Previous Crop</label>
+                        <input type="text" name="previous_crop" placeholder="e.g. Rice, Wheat, Corn">
+                        <i class="fas fa-history input-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-expand-alt"></i> Area Size</label>
+                        <input type="text" name="area_size" placeholder="e.g. 5 acres, 2 hectares">
+                        <i class="fas fa-expand-alt input-icon"></i>
+                    </div>
+                    
+                    <div class="input-group language-selector">
+                        <label><i class="fas fa-language"></i> Preferred Language</label>
+                        <select name="language" id="language">
+                            <option value="en-US">English 🇺🇸</option>
+                            <option value="ta-IN">Tamil 🇮🇳</option>
+                            <option value="hi-IN">Hindi 🇮🇳</option>
+                            <option value="ml-IN">Malayalam 🇮🇳</option>
+                            <option value="te-IN">Telugu 🇮🇳</option>
+                            <option value="kn-IN">Kannada 🇮🇳</option>
+                            <option value="bn-IN">Bengali 🇮🇳</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-search"></i> Analyze & Get Crop Recommendations
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        {% if recommendation %}
+        <!-- Results Section -->
+        <div class="result-card">
+            <h3><i class="fas fa-leaf"></i> Recommended Crops & Farming Plan</h3>
+            
+            <div class="recommendation-text" id="recText">{{ recommendation }}</div>
+            
+            <!-- Crop Statistics -->
+            <div class="crop-stats">
+                <div class="stat-card">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="stat-value" id="yieldStat">85%</div>
+                    <div class="stat-label">Expected Yield</div>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="stat-value" id="growthStat">90-120</div>
+                    <div class="stat-label">Growth Days</div>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-indian-rupee-sign"></i>
+                    <div class="stat-value" id="profitStat">₹45K</div>
+                    <div class="stat-label">Profit/Acre</div>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-tint"></i>
+                    <div class="stat-value" id="waterStat">{{ 'High' if water_level == 'High' else 'Medium' if water_level == 'Medium' else 'Low' }}</div>
+                    <div class="stat-label">Water Needs</div>
+                </div>
+            </div>
+            
+            <!-- Weather Information -->
+            <div class="weather-info">
+                <h4><i class="fas fa-cloud-sun"></i> Ideal Growing Conditions</h4>
+                <div class="weather-details">
+                    <div class="weather-item">
+                        <i class="fas fa-thermometer-half"></i>
+                        <div style="font-weight: 700; color: #228B22;">20-30°C</div>
+                        <div>Temperature</div>
+                    </div>
+                    
+                    <div class="weather-item">
+                        <i class="fas fa-wind"></i>
+                        <div style="font-weight: 700; color: #228B22;">60-80%</div>
+                        <div>Humidity</div>
+                    </div>
+                    
+                    <div class="weather-item">
+                        <i class="fas fa-cloud-rain"></i>
+                        <div style="font-weight: 700; color: #228B22;">500-800mm</div>
+                        <div>Rainfall</div>
+                    </div>
+                    
+                    <div class="weather-item">
+                        <i class="fas fa-sun"></i>
+                        <div style="font-weight: 700; color: #228B22;">6-8 hrs</div>
+                        <div>Sunlight/Day</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Audio Controls -->
+            <div class="audio-controls">
+                <button id="playCropBtn" class="audio-btn">
+                    <i class="fas fa-play"></i> Play Recommendation
+                </button>
+                <button id="pauseCropBtn" class="audio-btn">
+                    <i class="fas fa-pause"></i> Pause
+                </button>
+                <button id="stopCropBtn" class="audio-btn" onclick="stopAudio()">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+                <button id="downloadCropBtn" class="audio-btn" onclick="downloadCropPlan()">
+                    <i class="fas fa-download"></i> Download Plan
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='voice.js') }}"></script>
+    <script>
+        // Initialize voice controls if recommendation exists
+        {% if recommendation %}
+        document.addEventListener('DOMContentLoaded', function() {
+            initVoiceControls('recText', 'playCropBtn', 'pauseCropBtn', 'language');
+            
+            // Initialize stats based on soil type
+            updateStatsBasedOnSoil();
+        });
+        {% endif %}
+        
+        // Quick soil type selection
+        function selectSoil(type) {
+            const soilInput = document.getElementById('soil_type');
+            soilInput.value = type;
+            
+            // Add visual feedback
+            const soilTypes = document.querySelectorAll('.soil-type');
+            soilTypes.forEach(soil => soil.style.borderColor = 'transparent');
+            
+            event.target.style.borderColor = '#228B22';
+            event.target.style.boxShadow = '0 0 0 3px rgba(34, 139, 34, 0.2)';
+            
+            // Update stats preview
+            updateStatsBasedOnSoil();
+        }
+        
+        // Update stats based on selected soil
+        function updateStatsBasedOnSoil() {
+            const soilInput = document.getElementById('soil_type');
+            if (!soilInput) return;
+            
+            const soilType = soilInput.value.toLowerCase();
+            const yieldStat = document.getElementById('yieldStat');
+            const profitStat = document.getElementById('profitStat');
+            
+            if (yieldStat && profitStat) {
+                if (soilType.includes('loamy')) {
+                    yieldStat.textContent = '95%';
+                    profitStat.textContent = '₹55K';
+                } else if (soilType.includes('clay')) {
+                    yieldStat.textContent = '75%';
+                    profitStat.textContent = '₹35K';
+                } else if (soilType.includes('sandy')) {
+                    yieldStat.textContent = '65%';
+                    profitStat.textContent = '₹25K';
+                }
+            }
+        }
+        
+        // Stop audio function
+        function stopAudio() {
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+                // Reset buttons
+                const playBtn = document.getElementById('playCropBtn');
+                const pauseBtn = document.getElementById('pauseCropBtn');
+                
+                if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i> Play Recommendation';
+                if (pauseBtn) pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            }
+        }
+        
+        // Download crop plan
+        function downloadCropPlan() {
+            const cropText = document.getElementById('recText').textContent;
+            const blob = new Blob([cropText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Crop_Advisor_Recommendation.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Show success animation
+            const downloadBtn = document.getElementById('downloadCropBtn');
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
+            downloadBtn.style.background = 'linear-gradient(to right, #228B22, #32CD32)';
+            
+            setTimeout(() => {
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.style.background = '';
+            }, 2000);
+        }
+        
+        // Form validation and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const inputs = document.querySelectorAll('input[required], select[required]');
+            
+            // Add focus effects
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-5px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Form submission animation
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.style.animation = 'shake 0.5s';
+                        input.style.borderColor = '#FF6347';
+                        
+                        setTimeout(() => {
+                            input.style.animation = '';
+                        }, 500);
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = `
+                        background: linear-gradient(to right, #FF6347, #DC143C);
+                        color: white;
+                        padding: 15px;
+                        border-radius: 10px;
+                        margin-top: 20px;
+                        text-align: center;
+                        font-weight: 600;
+                        animation: fadeIn 0.5s ease;
+                    `;
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please fill all required fields';
+                    
+                    const existingError = document.querySelector('.error-message');
+                    if (existingError) existingError.remove();
+                    
+                    errorDiv.classList.add('error-message');
+                    this.appendChild(errorDiv);
+                    
+                    // Remove error after 5 seconds
+                    setTimeout(() => {
+                        errorDiv.remove();
+                    }, 5000);
+                } else {
+                    // Show loading animation
+                    const submitBtn = this.querySelector('.submit-btn');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing Farm Data...';
+                    submitBtn.disabled = true;
+                    
+                    // Add progress animation
+                    const progressBar = document.createElement('div');
+                    progressBar.style.cssText = `
+                        width: 0%;
+                        height: 5px;
+                        background: linear-gradient(to right, #32CD32, #228B22);
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        border-radius: 0 0 15px 15px;
+                        transition: width 2s ease;
+                    `;
+                    submitBtn.appendChild(progressBar);
+                    
+                    setTimeout(() => {
+                        progressBar.style.width = '100%';
+                    }, 100);
+                    
+                    // Re-enable after 5 seconds (in case of error)
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        progressBar.remove();
+                    }, 5000);
+                }
+            });
+            
+            // Add shake animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                    20%, 40%, 60%, 80% { transform: translateX(5px); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Listen to soil type changes
+            const soilInput = document.getElementById('soil_type');
+            if (soilInput) {
+                soilInput.addEventListener('input', updateStatsBasedOnSoil);
+            }
+        });
+    </script>
+</body>
+</html>
